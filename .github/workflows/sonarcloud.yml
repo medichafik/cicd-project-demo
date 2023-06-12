@@ -4,7 +4,12 @@ on: workflow_dispatch
 
 jobs:
   sonarcloud:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  #windows-latest or macos-latest : GitHub-hosted runners https://docs.github.com/en/enterprise-cloud@latest/actions/using-jobs/using-a-matrix-for-your-jobs#using-a-matrix-strategy
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.pull_request.title, '[skip ci]') && !contains(github.event.pull_request.title, '[ci skip]')"
+    timeout-minutes: 90    #max 6 hours : 360 min
+    permissions:
+      contents: 'read'   #Get the content of a file or directory in a public repository.
+      id-token: 'write'    #To get an OIDC token it must have permissions to make API calls against the OIDC provider.
     steps:
       - uses: actions/checkout@v3     #https://github.com/marketplace?type=actions&query=checkout+
       - uses: actions/setup-node@v3
